@@ -18,7 +18,7 @@ export function registerInputTools(api: OpenClawPluginApi) {
       text: Type.String({ description: 'Text to copy to the phone clipboard' }),
     }),
     execute: withToolErrorHandling(async (_callId, params) => {
-      const client = getClient(config);
+      const client = await getClient(config);
       await resolvePhoneForTool(client);
       await client.typeText(params.text as string);
       return textResult(`Copied text to phone clipboard: "${params.text}"`);
@@ -31,7 +31,7 @@ export function registerInputTools(api: OpenClawPluginApi) {
     description: 'Dismiss keyboard, modal, or popup on the iPhone screen',
     parameters: Type.Object({}),
     execute: withToolErrorHandling(async () => {
-      const client = getClient(config);
+      const client = await getClient(config);
       await resolvePhoneForTool(client);
       await client.escape();
       return textResult('Escape sent');

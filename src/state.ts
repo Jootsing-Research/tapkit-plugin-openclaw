@@ -4,11 +4,11 @@
  */
 
 import { TapKitClient } from './client/tapkit-client.js';
-import { requireApiKey, type PluginConfig } from './auth.js';
+import { requireAuthToken, type PluginConfig } from './auth.js';
 
 let sessionPhoneId: string | null = null;
 let client: TapKitClient | null = null;
-let currentApiKey: string | null = null;
+let currentToken: string | null = null;
 
 export function getSessionPhoneId(): string | null {
   return sessionPhoneId;
@@ -18,14 +18,19 @@ export function setSessionPhoneId(id: string): void {
   sessionPhoneId = id;
 }
 
-export function getClient(pluginConfig: PluginConfig): TapKitClient {
-  const apiKey = requireApiKey(pluginConfig);
-  if (!client || apiKey !== currentApiKey) {
-    client = new TapKitClient(apiKey);
-    currentApiKey = apiKey;
+export async function getClient(pluginConfig: PluginConfig): Promise<TapKitClient> {
+  const token = await requireAuthToken(pluginConfig);
+  if (!client || token !== currentToken) {
+    client = new TapKitClient(token);
+    currentToken = token;
     if (sessionPhoneId) {
       client.setPhoneId(sessionPhoneId);
     }
   }
   return client;
+}
+
+export function resetClient(): void {
+  client = null;
+  currentToken = null;
 }

@@ -18,7 +18,7 @@ export function registerGestureTools(api: OpenClawPluginApi) {
       y: Type.Number({ description: 'Y coordinate' }),
     }),
     execute: withToolErrorHandling(async (_callId, params) => {
-      const client = getClient(config);
+      const client = await getClient(config);
       await resolvePhoneForTool(client);
       await client.tap(params.x as number, params.y as number);
       return textResult(`Tapped at (${params.x}, ${params.y})`);
@@ -34,7 +34,7 @@ export function registerGestureTools(api: OpenClawPluginApi) {
       y: Type.Number({ description: 'Y coordinate' }),
     }),
     execute: withToolErrorHandling(async (_callId, params) => {
-      const client = getClient(config);
+      const client = await getClient(config);
       await resolvePhoneForTool(client);
       await client.doubleTap(params.x as number, params.y as number);
       return textResult(`Double tapped at (${params.x}, ${params.y})`);
@@ -54,7 +54,7 @@ export function registerGestureTools(api: OpenClawPluginApi) {
       ),
     }),
     execute: withToolErrorHandling(async (_callId, params) => {
-      const client = getClient(config);
+      const client = await getClient(config);
       await resolvePhoneForTool(client);
       await client.longPress(
         params.x as number,
@@ -86,7 +86,7 @@ export function registerGestureTools(api: OpenClawPluginApi) {
       ),
     }),
     execute: withToolErrorHandling(async (_callId, params) => {
-      const client = getClient(config);
+      const client = await getClient(config);
       await resolvePhoneForTool(client);
       await client.flick(
         params.x as number,
@@ -111,7 +111,7 @@ export function registerGestureTools(api: OpenClawPluginApi) {
       to_y: Type.Number({ description: 'End Y coordinate' }),
     }),
     execute: withToolErrorHandling(async (_callId, params) => {
-      const client = getClient(config);
+      const client = await getClient(config);
       await resolvePhoneForTool(client);
       await client.drag(
         params.from_x as number,
@@ -142,7 +142,7 @@ export function registerGestureTools(api: OpenClawPluginApi) {
       ),
     }),
     execute: withToolErrorHandling(async (_callId, params) => {
-      const client = getClient(config);
+      const client = await getClient(config);
       await resolvePhoneForTool(client);
       await client.holdAndDrag(
         params.from_x as number,

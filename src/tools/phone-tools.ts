@@ -15,7 +15,7 @@ export function registerPhoneTools(api: OpenClawPluginApi) {
     description: 'List all connected iPhone devices',
     parameters: Type.Object({}),
     execute: withToolErrorHandling(async () => {
-      const client = getClient(config);
+      const client = await getClient(config);
       const phones = await client.listPhones();
       if (phones.length === 0) {
         return textResult('No phones connected.');
@@ -37,7 +37,7 @@ export function registerPhoneTools(api: OpenClawPluginApi) {
       phone_id: Type.String({ description: 'Phone ID from tapkit_list_phones' }),
     }),
     execute: withToolErrorHandling(async (_callId, params) => {
-      const client = getClient(config);
+      const client = await getClient(config);
       const phoneId = params.phone_id as string;
       setSessionPhoneId(phoneId);
       client.setPhoneId(phoneId);
@@ -63,7 +63,7 @@ export function registerPhoneTools(api: OpenClawPluginApi) {
       ),
     }),
     execute: withToolErrorHandling(async (_callId, params) => {
-      const client = getClient(config);
+      const client = await getClient(config);
       const phoneId = params.phone_id as string | undefined;
       if (phoneId) {
         const info = await client.getPhoneInfo(phoneId);

@@ -8,7 +8,11 @@
     "properties": {
       "apiKey": {
         "type": "string",
-        "description": "TapKit API key (get one at tapkit.ai). Can also use TAPKIT_API_KEY env var."
+        "description": "TapKit API key (get one at tapkit.ai). Can also use TAPKIT_API_KEY env var or /tapkit login."
+      },
+      "callbackUrl": {
+        "type": "string",
+        "description": "Override OAuth callback URL (only needed for remote/non-localhost deployments)."
       }
     }
   }

@@ -19,7 +19,7 @@ export function registerDeviceTools(api: OpenClawPluginApi) {
       ),
     }),
     execute: withToolErrorHandling(async (_callId, params) => {
-      const client = getClient(config);
+      const client = await getClient(config);
       if (params.phone_id) {
         const phoneId = params.phone_id as string;
         setSessionPhoneId(phoneId);
@@ -39,7 +39,7 @@ export function registerDeviceTools(api: OpenClawPluginApi) {
     description: 'Lock the iPhone screen',
     parameters: Type.Object({}),
     execute: withToolErrorHandling(async () => {
-      const client = getClient(config);
+      const client = await getClient(config);
       await resolvePhoneForTool(client);
       await client.lock();
       return textResult('Phone locked');
@@ -56,7 +56,7 @@ export function registerDeviceTools(api: OpenClawPluginApi) {
       ),
     }),
     execute: withToolErrorHandling(async (_callId, params) => {
-      const client = getClient(config);
+      const client = await getClient(config);
       await resolvePhoneForTool(client);
       await client.unlock(params.passcode as string | undefined);
       return textResult('Phone unlocked');
@@ -69,7 +69,7 @@ export function registerDeviceTools(api: OpenClawPluginApi) {
     description: 'Increase iPhone volume',
     parameters: Type.Object({}),
     execute: withToolErrorHandling(async () => {
-      const client = getClient(config);
+      const client = await getClient(config);
       await resolvePhoneForTool(client);
       await client.volumeUp();
       return textResult('Volume increased');
@@ -82,7 +82,7 @@ export function registerDeviceTools(api: OpenClawPluginApi) {
     description: 'Decrease iPhone volume',
     parameters: Type.Object({}),
     execute: withToolErrorHandling(async () => {
-      const client = getClient(config);
+      const client = await getClient(config);
       await resolvePhoneForTool(client);
       await client.volumeDown();
       return textResult('Volume decreased');
@@ -97,7 +97,7 @@ export function registerDeviceTools(api: OpenClawPluginApi) {
       index: Type.Number({ description: 'Shortcut index number' }),
     }),
     execute: withToolErrorHandling(async (_callId, params) => {
-      const client = getClient(config);
+      const client = await getClient(config);
       await resolvePhoneForTool(client);
       await client.runShortcut(params.index as number);
       return textResult(`Ran shortcut #${params.index}`);
@@ -110,7 +110,7 @@ export function registerDeviceTools(api: OpenClawPluginApi) {
     description: 'Enable Switch Control accessibility feature on the iPhone',
     parameters: Type.Object({}),
     execute: withToolErrorHandling(async () => {
-      const client = getClient(config);
+      const client = await getClient(config);
       await resolvePhoneForTool(client);
       await client.enableSwitchControl();
       return textResult('Switch Control enabled');

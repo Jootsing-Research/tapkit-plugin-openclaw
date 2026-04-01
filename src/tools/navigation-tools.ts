@@ -17,7 +17,7 @@ export function registerNavigationTools(api: OpenClawPluginApi) {
       app_name: Type.String({ description: 'App name to open' }),
     }),
     execute: withToolErrorHandling(async (_callId, params) => {
-      const client = getClient(config);
+      const client = await getClient(config);
       await resolvePhoneForTool(client);
       await client.openApp(params.app_name as string);
       return textResult(`Opened ${params.app_name}`);
@@ -30,7 +30,7 @@ export function registerNavigationTools(api: OpenClawPluginApi) {
     description: 'Press the home button to go to the iPhone home screen',
     parameters: Type.Object({}),
     execute: withToolErrorHandling(async () => {
-      const client = getClient(config);
+      const client = await getClient(config);
       await resolvePhoneForTool(client);
       await client.pressHome();
       return textResult('Pressed home');
@@ -47,7 +47,7 @@ export function registerNavigationTools(api: OpenClawPluginApi) {
       ),
     }),
     execute: withToolErrorHandling(async (_callId, params) => {
-      const client = getClient(config);
+      const client = await getClient(config);
       await resolvePhoneForTool(client);
       await client.spotlight(params.query as string | undefined);
       const msg = params.query
@@ -63,7 +63,7 @@ export function registerNavigationTools(api: OpenClawPluginApi) {
     description: 'Activate Siri voice assistant on the iPhone',
     parameters: Type.Object({}),
     execute: withToolErrorHandling(async () => {
-      const client = getClient(config);
+      const client = await getClient(config);
       await resolvePhoneForTool(client);
       await client.activateSiri();
       return textResult('Siri activated');
