@@ -1,0 +1,54 @@
+{
+  "name": "tapkit-openclaw",
+  "version": "0.1.0",
+  "description": "TapKit plugin for OpenClaw — iPhone automation",
+  "type": "module",
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "skills",
+    "openclaw.plugin.json",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "openclaw": {
+    "extensions": ["./dist/index.js"],
+    "compat": {
+      "pluginApi": ">=2026.3.24-beta.2",
+      "minGatewayVersion": "2026.3.24-beta.2"
+    },
+    "build": {
+      "openclawVersion": "2026.3.24-beta.2",
+      "pluginSdkVersion": "2026.3.24-beta.2"
+    }
+  },
+  "peerDependencies": {
+    "openclaw": ">=2026.3.24-beta.2"
+  },
+  "devDependencies": {
+    "@sinclair/typebox": "^0.32.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "openclaw",
+    "openclaw-plugin",
+    "tapkit",
+    "iphone",
+    "ios",
+    "automation"
+  ],
+  "author": "Jootsing Research",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Jootsing-Research/tapkit-plugin-openclaw"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

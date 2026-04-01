@@ -1,0 +1,15 @@
+{
+  "id": "tapkit",
+  "name": "TapKit",
+  "description": "iPhone automation — control real iPhones with taps, swipes, screenshots, and app navigation",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "apiKey": {
+        "type": "string",
+        "description": "TapKit API key (get one at tapkit.ai). Can also use TAPKIT_API_KEY env var."
+      }
+    }
+  }
+}
