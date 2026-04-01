@@ -23,7 +23,7 @@ Publishing is triggered by pushing a git tag matching `v*` to the `origin` remot
 3. **Create and push the tag**:
    ```bash
    git tag v<version>
-   git push origin master
+   git push origin main
    git push origin v<version>
    ```
 
