@@ -1,4 +1,3 @@
-import { exec } from 'node:child_process';
 import { definePluginEntry } from 'openclaw/plugin-sdk/plugin-entry';
 import type { OpenClawConfig } from 'openclaw/plugin-sdk/plugin-entry';
 import { registerAllTools } from './tools/index.js';
@@ -96,13 +95,8 @@ async function handleLoginCommand(
       callbackUrl: pluginConfig.callbackUrl,
     });
 
-    const openCmd =
-      process.platform === 'darwin' ? 'open' :
-      process.platform === 'win32' ? 'start' : 'xdg-open';
-    exec(`${openCmd} "${authorizeUrl}"`);
-
     return {
-      text: `Opening browser for TapKit login...\n\nIf it doesn't open automatically, visit:\n${authorizeUrl}`,
+      text: `Visit this URL to log in to TapKit:\n\n${authorizeUrl}`,
     };
   } catch (error) {
     return {
