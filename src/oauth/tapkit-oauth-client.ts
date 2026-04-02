@@ -2,11 +2,7 @@
  * HTTP client for TapKit's OAuth 2.0 endpoints at mcp.tapkit.ai.
  */
 
-const DEFAULT_MCP_URL = 'https://mcp.tapkit.ai';
-
-function getMcpUrl(): string {
-  return process.env.TAPKIT_MCP_URL || DEFAULT_MCP_URL;
-}
+const MCP_URL = 'https://mcp.tapkit.ai';
 
 export interface TokenResponse {
   access_token: string;
@@ -30,7 +26,7 @@ export interface RegisterClientResponse {
 export async function registerClient(
   redirectUri: string
 ): Promise<RegisterClientResponse> {
-  const res = await fetch(`${getMcpUrl()}/oauth/register`, {
+  const res = await fetch(`${MCP_URL}/oauth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -64,7 +60,7 @@ export async function exchangeCode(params: {
     code_verifier: params.codeVerifier,
   });
 
-  const res = await fetch(`${getMcpUrl()}/oauth/token`, {
+  const res = await fetch(`${MCP_URL}/oauth/token`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: body.toString(),
@@ -86,7 +82,7 @@ export async function refreshTokens(params: {
     refresh_token: params.refreshToken,
   });
 
-  const res = await fetch(`${getMcpUrl()}/oauth/token`, {
+  const res = await fetch(`${MCP_URL}/oauth/token`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: body.toString(),
@@ -106,7 +102,7 @@ export function buildAuthorizeUrl(params: {
   state: string;
   codeChallenge: string;
 }): string {
-  const url = new URL(`${getMcpUrl()}/oauth/authorize`);
+  const url = new URL(`${MCP_URL}/oauth/authorize`);
   url.searchParams.set('client_id', params.clientId);
   url.searchParams.set('redirect_uri', params.redirectUri);
   url.searchParams.set('state', params.state);

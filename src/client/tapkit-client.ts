@@ -6,11 +6,7 @@
  * TODO: Extract into @jootsing/tapkit-sdk and import as a dependency.
  */
 
-const DEFAULT_API_URL = 'https://api.tapkit.ai/v1';
-
-function getApiUrl(): string {
-  return process.env.TAPKIT_API_URL || DEFAULT_API_URL;
-}
+const API_URL = 'https://api.tapkit.ai/v1';
 
 export interface Phone {
   id: string;
@@ -61,7 +57,7 @@ export class TapKitClient {
     endpoint: string,
     body?: Record<string, unknown>
   ): Promise<T> {
-    const url = `${getApiUrl()}${endpoint}`;
+    const url = `${API_URL}${endpoint}`;
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
