@@ -1,6 +1,6 @@
 {
   "name": "tapkit-openclaw",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "TapKit plugin for OpenClaw — iPhone automation",
   "type": "module",
   "main": "dist/index.js",
@@ -31,8 +31,10 @@
   "peerDependencies": {
     "openclaw": ">=2026.3.24-beta.2"
   },
+  "dependencies": {
+    "@sinclair/typebox": "^0.32.0"
+  },
   "devDependencies": {
-    "@sinclair/typebox": "^0.32.0",
     "@types/node": "^22.0.0",
     "tsx": "^4.21.0",
     "typescript": "^5.0.0"
