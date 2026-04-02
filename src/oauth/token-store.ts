@@ -65,3 +65,21 @@ export function clearTokens(): void {
   delete config.oauthTokens;
   saveTapKitConfig(config);
 }
+
+export function saveApiKey(apiKey: string): void {
+  const config = loadTapKitConfig();
+  config.apiKey = apiKey;
+  saveTapKitConfig(config);
+}
+
+export function clearApiKey(): void {
+  const config = loadTapKitConfig();
+  delete config.apiKey;
+  delete config.oauthTokens;
+  saveTapKitConfig(config);
+}
+
+export function getStoredApiKey(): string | null {
+  const config = loadTapKitConfig();
+  return config.apiKey ?? null;
+}

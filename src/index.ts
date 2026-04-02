@@ -1,12 +1,10 @@
 import { definePluginEntry } from 'openclaw/plugin-sdk/plugin-entry';
-import type { OpenClawConfig } from 'openclaw/plugin-sdk/plugin-entry';
 import { registerAllTools } from './tools/index.js';
 import { getClient, getSessionPhoneId, resetClient } from './state.js';
-import { resolveApiKey, resolveAuthToken } from './auth.js';
+import { resolveAuthToken } from './auth.js';
 import type { PluginConfig } from './auth.js';
 import { TapKitAPIError } from './client/tapkit-client.js';
-import { startLogin, handleOAuthCallback } from './oauth/login-flow.js';
-import { clearTokens, getStoredTokens } from './oauth/token-store.js';
+import { saveApiKey, clearApiKey, loadTapKitConfig } from './oauth/token-store.js';
 
 export default definePluginEntry({
   id: 'tapkit',
@@ -21,9 +19,6 @@ export default definePluginEntry({
       if (obj.apiKey !== undefined && typeof obj.apiKey !== 'string') {
         return { ok: false as const, errors: ['apiKey must be a string'] };
       }
-      if (obj.callbackUrl !== undefined && typeof obj.callbackUrl !== 'string') {
-        return { ok: false as const, errors: ['callbackUrl must be a string'] };
-      }
       return { ok: true as const, value: obj };
     },
     jsonSchema: {
@@ -32,48 +27,34 @@ export default definePluginEntry({
       properties: {
         apiKey: {
           type: 'string',
-          description: 'TapKit API key (get one at tapkit.ai). Can also use TAPKIT_API_KEY env var.',
-        },
-        callbackUrl: {
-          type: 'string',
-          description: 'Override OAuth callback URL for non-localhost deployments.',
+          description: 'TapKit API key (get one at tapkit.ai/dashboard).',
         },
       },
     },
     uiHints: {
       apiKey: {
         label: 'API Key',
-        help: 'Your TapKit API key. Alternatively use /tapkit login for browser-based auth.',
+        help: 'Your TapKit API key. Use /tapkit login <key> to set it.',
         sensitive: true,
         placeholder: 'tk_...',
-      },
-      callbackUrl: {
-        label: 'OAuth Callback URL',
-        help: 'Only needed for remote/non-localhost Gateway deployments.',
-        advanced: true,
       },
     },
   },
   register(api) {
     registerAllTools(api);
 
-    // OAuth callback route
-    api.registerHttpRoute({
-      path: '/api/plugins/tapkit/oauth/callback',
-      auth: 'plugin',
-      match: 'exact',
-      handler: handleOAuthCallback,
-    });
-
     api.registerCommand({
       name: 'tapkit',
-      description: 'TapKit status, login, and configuration',
+      description: 'TapKit status and authentication',
       acceptsArgs: true,
       handler: async (ctx) => {
-        const subcommand = ctx.args?.trim().split(/\s+/)[0];
+        const args = ctx.args?.trim() || '';
+        const parts = args.split(/\s+/);
+        const subcommand = parts[0];
 
         if (subcommand === 'login') {
-          return handleLoginCommand(api.config as PluginConfig, ctx.config);
+          const apiKey = parts[1];
+          return handleLoginCommand(apiKey);
         }
         if (subcommand === 'logout') {
           return handleLogoutCommand();
@@ -84,32 +65,35 @@ export default definePluginEntry({
   },
 });
 
-async function handleLoginCommand(
-  pluginConfig: PluginConfig,
-  openclawConfig: OpenClawConfig
-): Promise<{ text: string; isError?: boolean }> {
-  try {
-    const gatewayPort = (openclawConfig as Record<string, unknown> & { gateway?: { port?: number } }).gateway?.port ?? 18789;
-    const { authorizeUrl } = await startLogin({
-      gatewayPort,
-      callbackUrl: pluginConfig.callbackUrl,
-    });
-
+function handleLoginCommand(
+  apiKey?: string
+): { text: string; isError?: boolean } {
+  if (!apiKey) {
     return {
-      text: `Visit this URL to log in to TapKit:\n\n${authorizeUrl}`,
+      text: 'Usage: /tapkit login <api_key>\n\nGet your API key from https://tapkit.ai/dashboard\nThen run: /tapkit login tk_your_key_here',
     };
-  } catch (error) {
+  }
+
+  if (!apiKey.startsWith('tk_') && !apiKey.startsWith('ses_')) {
     return {
-      text: `Login failed: ${error instanceof Error ? error.message : String(error)}`,
+      text: 'Invalid API key format. Keys should start with tk_ or ses_.\n\nGet your key from https://tapkit.ai/dashboard',
       isError: true,
     };
   }
+
+  saveApiKey(apiKey);
+  resetClient();
+
+  const masked = apiKey.slice(0, 6) + '...' + apiKey.slice(-4);
+  return {
+    text: `Authenticated. API key saved (${masked}).\n\nYou can now use TapKit tools. Try: tapkit_screenshot`,
+  };
 }
 
 function handleLogoutCommand(): { text: string } {
-  clearTokens();
+  clearApiKey();
   resetClient();
-  return { text: 'Logged out of TapKit. Stored tokens cleared.' };
+  return { text: 'Logged out of TapKit. Stored API key cleared.' };
 }
 
 async function handleStatusCommand(
@@ -119,21 +103,19 @@ async function handleStatusCommand(
     const token = await resolveAuthToken(pluginConfig);
     if (!token) {
       return {
-        text: 'TapKit: Not authenticated.\n\nRun /tapkit login to sign in with your browser, or set TAPKIT_API_KEY.',
+        text: 'TapKit: Not authenticated.\n\nRun: /tapkit login <api_key>\nGet your key from https://tapkit.ai/dashboard',
       };
     }
 
-    // Determine auth source
     let authSource = 'unknown';
     if (process.env.TAPKIT_API_KEY) {
       authSource = 'environment variable';
     } else if (pluginConfig.apiKey) {
       authSource = 'plugin config';
     } else {
-      const stored = getStoredTokens();
-      if (stored) {
-        const minutesLeft = Math.round((stored.expires_at - Date.now()) / 60000);
-        authSource = `OAuth (expires in ${minutesLeft}m)`;
+      const config = loadTapKitConfig();
+      if (config.apiKey) {
+        authSource = 'saved key (~/.tapkit/config.json)';
       }
     }
 
